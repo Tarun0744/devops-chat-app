@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Chat App</title>
+    <!-- Load Tailwind CSS for simple styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Set a nice, readable font */
+        body { font-family: 'Inter', sans-serif; background-color: #f7fafc; }
+        /* Ensure chat container scrolls */
+        #messages { max-height: 70vh; overflow-y: auto; }
+    </style>
+</head>
+<body class="p-4 sm:p-8 bg-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="w-full max-w-lg bg-white shadow-xl rounded-xl overflow-hidden">
+        <header class="bg-indigo-600 text-white p-4">
+            <h1 class="text-xl font-bold">Real-Time DevOps Chat</h1>
+…            <input id="input" autocomplete="off" class="flex-grow p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type a message..." />
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-r-lg transition duration-150 ease-in-out shadow-md">Send</button>
+        </form>
+    </div>
+    <!-- Load Socket.IO Client Library -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        // Client-side JavaScript logic
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+        const status = document.getElementById('status');
+
+        // Connect to the Socket.IO server
+        const socket = io();
+
+        socket.on('connect', () => {
+            const shortId = socket.id.substring(0, 4);
+            status.textContent = 'Connected (ID: ' + shortId + ')';
+            status.classList.remove('text-green-300');
+            status.classList.add('text-green-500');
+        });
+
+        socket.on('disconnect', () => {
+            status.textContent = 'Disconnected';
+            status.classList.remove('text-green-500');
+            status.classList.add('text-red-500');
+        });
+        // Handle form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (input.value) {
+                // Emit the message to the server
+                socket.emit('chat message', input.value);
+                input.value = ''; // Clear input field
+            }
+        });
+
+        // Listen for incoming messages
+        socket.on('chat message', function(msg) {
+            const item = document.createElement('li');
+            
+            // Extract sender ID and message content using regex based on the server format
+            const match = msg.match(/^\[(.*?)\]: (.*)$/);
+            if (!match) return; 
+
+            const senderId = match[1];
+…            // Scroll to the bottom
+            messages.scrollTop = messages.scrollHeight;
+        });
+    </script>
+</body>
+</html>

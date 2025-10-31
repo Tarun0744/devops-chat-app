@@ -1,0 +1,9 @@
+
+#Dependencies/Modules
+/node_modules
+
+#Logs and system files
+.log npm-debug.log
+
+#Operating System Files
+.DS_Store
