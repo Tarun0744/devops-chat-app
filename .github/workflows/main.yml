@@ -15,3 +15,4 @@
     push: true
     tags: ${{ secrets.DOCKER_USERNAME }}/chat-app:latest,${{ secrets.DOCKER_USERNAME }}/chat-app:${{ github.sha }}
     # The . (dot) in context: . tells Docker to use the Dockerfile in the current directory.
+    
